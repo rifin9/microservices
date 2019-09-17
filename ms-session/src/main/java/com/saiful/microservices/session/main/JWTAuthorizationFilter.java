@@ -18,6 +18,7 @@ import static com.saiful.microservices.session.main.SecurityConstants.TOKEN_PREF
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	public JWTAuthorizationFilter(AuthenticationManager authManager) {
@@ -44,7 +45,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
 					.getSubject();
 			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, (Collection<? extends GrantedAuthority>) new ArrayList<>());
+			    	List<GrantedAuthority> roles = new ArrayList<>();
+				return new UsernamePasswordAuthenticationToken(user, null, roles);
 			}
 			return null;
 		}

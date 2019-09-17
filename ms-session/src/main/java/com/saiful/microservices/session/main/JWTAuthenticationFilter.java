@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import javax.servlet.FilterChain;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private AuthenticationManager authenticationManager;
@@ -38,8 +40,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throws AuthenticationException {
 		try {
 			ApplicationUser creds = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
+			List<GrantedAuthority> roles = new ArrayList<>();
+			roles.add(new SimpleGrantedAuthority("ADMINISTRATOR"));
+//			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),
+//					creds.getPassword(), (Collection<? extends GrantedAuthority>) new ArrayList<>()));
 			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),
-					creds.getPassword(), (Collection<? extends GrantedAuthority>) new ArrayList<>()));
+				creds.getPassword(), roles));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
